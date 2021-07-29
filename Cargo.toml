@@ -1,0 +1,16 @@
+[package]
+name = "gmod-lzma"
+version = "0.1.0"
+authors = ["William Venner <william@venner.io>"]
+edition = "2018"
+license = "MIT"
+description = "util.Compress and util.Decompress but in Rust!"
+repository = "https://github.com/WilliamVenner/gmod-lzma-rs"
+keywords = ["gmod", "lzma", "glua"]
+categories = ["api-bindings", "compression"]
+
+[build-dependencies]
+cc = "1.0"
+
+[dependencies]
+num_cpus = "1.13"
