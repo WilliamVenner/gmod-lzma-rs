@@ -67,7 +67,15 @@ extern "C" {
 ///
 /// Compress a slice of bytes.
 ///
-/// ### Error codes
+/// ## Example
+/// ```rust
+/// let original = b"Hello, world!";
+/// let compressed = gmod_lzma::compress(original, 9).unwrap();
+/// let decompressed = gmod_lzma::decompress(&compressed).unwrap();
+/// assert_eq!(decompressed, original);
+/// ```
+///
+/// ## Error codes
 /// |||
 /// |---|---|
 /// | `SZ_OK` | Success |
@@ -124,7 +132,15 @@ pub fn compress(data: &[u8], level: i32) -> Result<Vec<u8>, SZ> {
 ///
 /// Decompress a compressed slice of bytes.
 ///
-/// ### Error codes
+/// ## Example
+/// ```rust
+/// let original = b"Hello, world!";
+/// let compressed = gmod_lzma::compress(original, 9).unwrap();
+/// let decompressed = gmod_lzma::decompress(&compressed).unwrap();
+/// assert_eq!(decompressed, original);
+/// ```
+///
+/// ## Error codes
 /// |||
 /// |---|---|
 /// | `SZ_OK` | Success |

@@ -8,7 +8,7 @@
 
 # Usage
 
-Add to your `Cargo.toml`(https://doc.rust-lang.org/cargo/reference/manifest.html) file:
+Add to your [`Cargo.toml`](https://doc.rust-lang.org/cargo/reference/manifest.html) file:
 
 ```toml
 [dependencies]
