@@ -1,3 +1,5 @@
+//! [`util.Compress`](https://wiki.facepunch.com/gmod/util.Compress) and [`util.Decompress`](https://wiki.facepunch.com/gmod/util.Decompress) but in Rust!
+
 use std::{convert::TryInto, os::raw::*, sync::Once};
 
 static mut NUM_THREADS: i32 = 0;
@@ -22,11 +24,9 @@ pub const SZ_ERROR_DATA: SZ = 1;
 pub const SZ_ERROR_MEM: SZ = 2;
 /// Unsupported properties
 pub const SZ_ERROR_UNSUPPORTED: SZ = 4;
-/// Incorrect paramater
-pub const SZ_ERROR_PARAM: SZ = 5;
 /// It needs more bytes in input buffer
 pub const SZ_ERROR_INPUT_EOF: SZ = 6;
-/// SZ_ERROR_OUTPUT_EOF
+/// Output buffer overflow
 pub const SZ_ERROR_OUTPUT_EOF: SZ = 7;
 /// Errors in multithreading functions
 pub const SZ_ERROR_THREAD: SZ = 12;
@@ -80,7 +80,6 @@ extern "C" {
 /// |---|---|
 /// | `SZ_OK` | Success |
 /// | `SZ_ERROR_MEM` | Memory allocation error |
-/// | `SZ_ERROR_PARAM` | Incorrect paramater |
 /// | `SZ_ERROR_OUTPUT_EOF` | Output buffer overflow |
 /// | `SZ_ERROR_THREAD` | Errors in multithreading functions |
 pub fn compress(data: &[u8], level: i32) -> Result<Vec<u8>, SZ> {
@@ -109,7 +108,7 @@ pub fn compress(data: &[u8], level: i32) -> Result<Vec<u8>, SZ> {
 		);
 
 		if props_size != LZMA_PROPS_SIZE {
-			return Err(-1);
+			return Err(SZ_ERROR_UNSUPPORTED);
 		}
 
 		if res != SZ_OK {
@@ -152,7 +151,7 @@ pub fn decompress(data: &[u8]) -> Result<Vec<u8>, SZ> {
 	unsafe {
 		let dest_len = u64::from_le_bytes(
 			data.get(LZMA_PROPS_SIZE..LZMA_PROPS_SIZE + 8)
-				.ok_or(-1)?
+				.ok_or(SZ_ERROR_INPUT_EOF)?
 				.try_into()
 				.unwrap(),
 		);
