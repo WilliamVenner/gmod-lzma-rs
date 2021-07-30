@@ -1,6 +1,9 @@
 //! [`util.Compress`](https://wiki.facepunch.com/gmod/util.Compress) and [`util.Decompress`](https://wiki.facepunch.com/gmod/util.Decompress) but in Rust!
 
-use std::{convert::TryInto, os::raw::*, sync::Once};
+mod bindings;
+use bindings::*;
+
+use std::{convert::TryInto, sync::Once};
 
 static mut NUM_THREADS: i32 = 0;
 static NUM_THREADS_SYNC: Once = Once::new();
@@ -14,7 +17,7 @@ fn num_cpus() -> i32 {
 }
 
 /// LZMA Error code
-pub type SZ = i32;
+pub type SZ = size_t;
 
 /// Success
 pub const SZ_OK: SZ = 0;
@@ -32,36 +35,6 @@ pub const SZ_ERROR_OUTPUT_EOF: SZ = 7;
 pub const SZ_ERROR_THREAD: SZ = 12;
 
 const LZMA_PROPS_SIZE: usize = 5;
-
-#[allow(non_upper_case_globals)]
-#[allow(non_camel_case_types)]
-#[allow(non_snake_case)]
-extern "C" {
-	fn LzmaCompress(
-		dest: *mut c_uchar,
-		destLen: *mut usize,
-		src: *const c_uchar,
-		srcLen: usize,
-		outProps: *mut c_uchar,
-		outPropsSize: *mut usize,
-		level: c_int,
-		dictSize: c_uint,
-		lc: c_int,
-		lp: c_int,
-		pb: c_int,
-		fb: c_int,
-		numThreads: c_int,
-	) -> c_int;
-
-	fn LzmaUncompress(
-		dest: *mut c_uchar,
-		destLen: *mut usize,
-		src: *const c_uchar,
-		srcLen: *mut usize,
-		props: *const c_uchar,
-		propsSize: usize,
-	) -> c_int;
-}
 
 /// 🔮 [`util.Compress`](https://wiki.facepunch.com/gmod/util.Compress)
 ///
@@ -86,16 +59,16 @@ pub fn compress(data: &[u8], level: i32) -> Result<Vec<u8>, SZ> {
 	unsafe {
 		let input_len = data.len();
 
-		let mut dest_size = (input_len + input_len / 3 + 128) as usize;
+		let mut dest_size = (input_len + input_len / 3 + 128) as size_t;
 
 		let mut output = vec![0u8; dest_size as usize];
 
-		let mut props_size = LZMA_PROPS_SIZE;
+		let mut props_size = LZMA_PROPS_SIZE as size_t;
 		let res = LzmaCompress(
 			output.as_mut_ptr().add(8 + LZMA_PROPS_SIZE),
 			&mut dest_size as *mut _,
 			data.as_ptr(),
-			input_len as usize,
+			input_len as size_t,
 			output.as_mut_ptr(),
 			&mut props_size as *mut _,
 			level,
@@ -105,9 +78,9 @@ pub fn compress(data: &[u8], level: i32) -> Result<Vec<u8>, SZ> {
 			2,
 			32,
 			num_cpus(),
-		);
+		) as SZ;
 
-		if props_size != LZMA_PROPS_SIZE {
+		if props_size != LZMA_PROPS_SIZE as size_t {
 			return Err(SZ_ERROR_UNSUPPORTED);
 		}
 
@@ -115,7 +88,7 @@ pub fn compress(data: &[u8], level: i32) -> Result<Vec<u8>, SZ> {
 			return Err(res);
 		}
 
-		let input_len = input_len as u64;
+		let input_len = input_len as size_t;
 		for (i, byte) in input_len.to_le_bytes().iter().enumerate() {
 			output[i + LZMA_PROPS_SIZE] = *byte;
 		}
@@ -155,17 +128,23 @@ pub fn decompress(data: &[u8]) -> Result<Vec<u8>, SZ> {
 				.try_into()
 				.unwrap(),
 		);
-		let mut written = dest_len as usize;
+		let mut written = dest_len as size_t;
 		let mut output = vec![0u8; dest_len as usize];
-		let mut src_len = data.len() as usize - LZMA_PROPS_SIZE - 8;
-		LzmaUncompress(
+		let mut src_len = data.len() as size_t - LZMA_PROPS_SIZE as size_t - 8;
+
+		let res = LzmaUncompress(
 			output.as_mut_ptr(),
 			&mut written as *mut _,
 			data.as_ptr().add(LZMA_PROPS_SIZE + 8),
 			&mut src_len as *mut _,
 			data.as_ptr(),
-			LZMA_PROPS_SIZE,
-		);
+			LZMA_PROPS_SIZE as size_t,
+		) as SZ;
+
+		if res != SZ_OK {
+			return Err(res);
+		}
+
 		Ok(output)
 	}
 }

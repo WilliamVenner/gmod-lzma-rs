@@ -1,6 +1,6 @@
 [package]
 name = "gmod-lzma"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["William Venner <william@venner.io>"]
 edition = "2018"
 license = "MIT"
@@ -11,6 +11,7 @@ categories = ["api-bindings", "compression"]
 
 [build-dependencies]
 cc = "1.0"
+bindgen = "0.59"
 
 [dependencies]
 num_cpus = "1.13"
