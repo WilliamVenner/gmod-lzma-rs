@@ -8,7 +8,7 @@ checksum = "e70cc2f62c6ce1868963827bd677764c62d07c3d9a3e1fb1177ee1a9ab199eb2"
 
 [[package]]
 name = "gmod-lzma"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "cc",
  "num_cpus",
