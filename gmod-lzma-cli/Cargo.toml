@@ -1,0 +1,15 @@
+[package]
+name = "gmod-lzma-cli"
+version = "1.0.1"
+authors = ["William Venner <william@venner.io>"]
+description = "Compress & decompress data for use in Garry's Mod"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "gmod_lzma"
+path = "src/main.rs"
+
+[dependencies]
+gmod-lzma = { path = "../" }

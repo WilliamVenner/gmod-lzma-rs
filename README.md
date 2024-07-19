@@ -8,9 +8,20 @@
 
 # Usage
 
+## As a Rust library
+
 Add to your [`Cargo.toml`](https://doc.rust-lang.org/cargo/reference/manifest.html) file:
 
 ```toml
 [dependencies]
 gmod-lzma = "*"
+```
+
+## As a binary
+
+You can download a binary from the [releases](https://github.com/WilliamVenner/gmod-lzma-rs/releases) page.
+
+```php
+Usage: gmod_lzma (-c | --compress) [-l | --level <level>] <input> <output>
+       gmod_lzma (-d | --decompress) <input> <output>
 ```

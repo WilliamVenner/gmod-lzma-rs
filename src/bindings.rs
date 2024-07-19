@@ -2,14 +2,7 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-#[cfg(all(target_os = "linux", target_pointer_width = "64"))]
-pub type size_t = ::std::os::raw::c_ulong;
-
-#[cfg(all(target_os = "windows", target_pointer_width = "64"))]
-pub type size_t = ::std::os::raw::c_ulonglong;
-
-#[cfg(target_pointer_width = "32")]
-pub type size_t = ::std::os::raw::c_uint;
+pub type size_t = libc::size_t;
 
 #[cfg(not(all(target_os = "windows", target_pointer_width = "32")))]
 extern "C" {
