@@ -25,3 +25,17 @@ You can download a binary from the [releases](https://github.com/WilliamVenner/g
 Usage: gmod_lzma (-c | --compress) [-l | --level <level>] <input> <output>
        gmod_lzma (-d | --decompress) <input> <output>
 ```
+
+# Building
+
+Firstly, [install Rust](https://rustup.rs/).
+
+Then, run the following commands:
+
+```sh
+git clone https://github.com/WilliamVenner/gmod-lzma-rs.git
+cd gmod-lzma-rs
+cargo build --release
+```
+
+Your binary can be found in `gmod-lzma-rs/target/release/`
